@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Cart</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000;
+      --card: #111;
+      --accent: #00aaff;
+      --text: #e0f7ff;
+      --shadow: 0 0 20px #00aaff55;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: 2rem;
+    }
+
+    .cart-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .cart-item {
+      background: var(--card);
+      border: 1px solid var(--accent);
+      padding: 1.2rem;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+      transition: 0.3s ease;
+    }
+
+    .cart-item:hover {
+      transform: scale(1.01);
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-info h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .item-info p {
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .item-actions span {
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    button {
+      background: var(--accent);
+      border: none;
+      color: #000;
+      padding: 0.5rem 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #0095cc;
+    }
+
+    .total {
+      margin-top: 2rem;
+      font-size: 1.4rem;
+      font-weight: bold;
+      text-align: center;
+      color: var(--accent);
+    }
+
+    .actions {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      max-width: 700px;
+      margin-inline: auto;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .actions a {
+      background: var(--accent);
+      color: #000;
+      padding: 0.7rem 1.5rem;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: var(--shadow);
+      text-align: center;
+      flex: 1 1 45%;
+    }
+
+    @media (max-width: 500px) {
+      .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+      }
+
+      .item-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .actions a {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🛒 Your Cart</h1>
+
+  <div class="cart-container" id="cartContainer"></div>
+
+  <div class="total" id="totalPrice">Total: $0</div>
+
+  <div class="actions">
+    <a href="index.html">← Continue Shopping</a>
+    <a href="checkout.html">Checkout →</a>
+  </div>
+
+  <script>
+    function loadCart() {
+      return JSON.parse(localStorage.getItem("cart") || "[]");
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    function renderCart() {
+      const cart = loadCart();
+      const container = document.getElementById("cartContainer");
+      container.innerHTML = "";
+      let total = 0;
+
+      if (cart.length === 0) {
+        container.innerHTML = "<p style='text-align:center;'>Your cart is empty.</p>";
+      }
+
+      cart.forEach((item, index) => {
+        total += item.quantity * (item.price || 10);
+
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+          <div class="item-info">
+            <h3>${item.name}</h3>
+            <p>Quantity: ${item.quantity}</p>
+          </div>
+          <div class="item-actions">
+            <span>$${(item.quantity * (item.price || 10)).toFixed(2)}</span>
+            <button onclick="removeItem(${index})">Remove</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      document.getElementById("totalPrice").textContent = `Total: $${total.toFixed(2)}`;
+    }
+
+    function removeItem(index) {
+      const cart = loadCart();
+      cart.splice(index, 1);
+      saveCart(cart);
+      renderCart();
+    }
+
+    renderCart();
+  </script>
+</body>
+</html>
